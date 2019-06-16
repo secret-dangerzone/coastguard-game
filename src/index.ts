@@ -116,7 +116,7 @@ const play = delta => {
         message.text = `Rescued ${numberOfDrowners -
           drowners.children.length}/${numberOfDrowners}`
       } else {
-        message.text = 'Success, you rescued everyone!!!'
+        message.text = 'What a success, you rescued everyone!!!'
       }
     }
   })
