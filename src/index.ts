@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import drownerPath from '../assets/drowner.png'
 import midBoatPath from '../assets/mid-boat.png'
 import hitTestRectangle from './hit-test-rectangle'
-import keyboard from './keyboard'
+import playerControls from './player-controls'
 
 const Application = PIXI.Application
 const Container = PIXI.Container
@@ -40,59 +40,18 @@ const setup = (loader, resources) => {
   midBoat = Sprite.from(resources.midBoat.texture)
   midBoat.anchor.set(0.5, 0.5)
   midBoat.scale.set(0.5, 0.5)
+  midBoat.rotation = 0
+  midBoat.acceleration = 0.05
+  midBoat.turnSpeed = 0.05
+  midBoat.friction = 0.99
   midBoat.vx = 0
   midBoat.vy = 0
   midBoat.position.set(canvasWidth / 2, canvasHeight - midBoat.height)
+
   app.stage.addChild(midBoat)
 
   message = new Text('Ready...')
   app.stage.addChild(message)
-
-  const left = keyboard('ArrowLeft')
-  const up = keyboard('ArrowUp')
-  const right = keyboard('ArrowRight')
-  const down = keyboard('ArrowDown')
-
-  left.press = () => {
-    midBoat.vx = -5
-    midBoat.vy = 0
-  }
-
-  left.release = () => {
-    if (!right.isDown && midBoat.vy === 0) {
-      midBoat.vx = 0
-    }
-  }
-
-  up.press = () => {
-    midBoat.vy = -5
-    midBoat.vx = 0
-  }
-  up.release = () => {
-    if (!down.isDown && midBoat.vx === 0) {
-      midBoat.vy = 0
-    }
-  }
-
-  right.press = () => {
-    midBoat.vx = 5
-    midBoat.vy = 0
-  }
-  right.release = () => {
-    if (!left.isDown && midBoat.vy === 0) {
-      midBoat.vx = 0
-    }
-  }
-
-  down.press = () => {
-    midBoat.vy = 5
-    midBoat.vx = 0
-  }
-  down.release = () => {
-    if (!up.isDown && midBoat.vx === 0) {
-      midBoat.vy = 0
-    }
-  }
 
   state = play
 
@@ -106,6 +65,7 @@ const gameLoop = delta => {
 }
 
 const play = delta => {
+  playerControls(midBoat)
   midBoat.y += midBoat.vy
   midBoat.x += midBoat.vx
 
