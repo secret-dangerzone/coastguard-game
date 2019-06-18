@@ -72,7 +72,12 @@ const play = delta => {
   playerControls(boat)
   boat.y += boat.vy
   boat.x += boat.vx
-  camera.pivot.set(boat.x - canvasWidth / 2, boat.y - canvasHeight / 2)
+  const scale = 1 - Math.min((Math.abs(boat.vy) + Math.abs(boat.vx)) / 20, 0.2)
+  camera.scale.set(scale, scale)
+  camera.pivot.set(
+    boat.x - canvasWidth / 2 / scale,
+    boat.y - canvasHeight / 2 / scale
+  )
 
   drowners.children.forEach(drowner => {
     if (hitTestRectangle(boat, drowner)) {
