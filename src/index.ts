@@ -50,7 +50,7 @@ const setup = (loader, resources) => {
   boat.scale.set(0.5, 0.5)
   boat.rotation = 0
   boat.acceleration = 0.05
-  boat.turnSpeed = 0.05
+  boat.turnSpeed = 0.01
   boat.friction = 0.99
   boat.vx = 0
   boat.vy = 0

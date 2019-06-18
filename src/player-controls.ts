@@ -18,9 +18,11 @@ export default boat => {
     boat.vy *= boat.friction
   }
   if (turningRight) {
-    boat.rotation += boat.turnSpeed
+    boat.rotation +=
+      Math.sqrt(Math.abs(boat.vx) + Math.abs(boat.vy)) * boat.turnSpeed
   }
   if (turningLeft) {
-    boat.rotation -= boat.turnSpeed
+    boat.rotation -=
+      Math.sqrt(Math.abs(boat.vx) + Math.abs(boat.vy)) * boat.turnSpeed
   }
 }
