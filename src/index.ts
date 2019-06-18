@@ -14,8 +14,6 @@ const canvasWidth = 800
 const canvasHeight = 600
 const numberOfDrowners = 5
 
-let drowners, message, midBoat, state
-
 const randomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
@@ -23,8 +21,18 @@ const app = new Application()
 app.renderer.backgroundColor = 0x2ebae8
 document.body.appendChild(app.view)
 
+const camera = new Container()
+app.stage.addChild(camera)
+
+const message = new Text('Ready...')
+message.position.set(8, 8)
+app.stage.addChild(message)
+
+const drowners = new Container()
+
+let boat, state
+
 const setup = (loader, resources) => {
-  drowners = new Container()
   for (let i = 0; i < numberOfDrowners; i++) {
     const drowner = Sprite.from(resources.drowner.texture)
     drowner.anchor.set(0.5, 0.5)
@@ -35,23 +43,19 @@ const setup = (loader, resources) => {
     )
     drowners.addChild(drowner)
   }
-  app.stage.addChild(drowners)
+  camera.addChild(drowners)
 
-  midBoat = Sprite.from(resources.midBoat.texture)
-  midBoat.anchor.set(0.5, 0.5)
-  midBoat.scale.set(0.5, 0.5)
-  midBoat.rotation = 0
-  midBoat.acceleration = 0.05
-  midBoat.turnSpeed = 0.05
-  midBoat.friction = 0.99
-  midBoat.vx = 0
-  midBoat.vy = 0
-  midBoat.position.set(canvasWidth / 2, canvasHeight - midBoat.height)
-
-  app.stage.addChild(midBoat)
-
-  message = new Text('Ready...')
-  app.stage.addChild(message)
+  boat = Sprite.from(resources.midBoat.texture)
+  boat.anchor.set(0.5, 0.5)
+  boat.scale.set(0.5, 0.5)
+  boat.rotation = 0
+  boat.acceleration = 0.05
+  boat.turnSpeed = 0.05
+  boat.friction = 0.99
+  boat.vx = 0
+  boat.vy = 0
+  boat.position.set(canvasWidth / 2, canvasHeight / 2)
+  camera.addChild(boat)
 
   state = play
 
@@ -65,12 +69,13 @@ const gameLoop = delta => {
 }
 
 const play = delta => {
-  playerControls(midBoat)
-  midBoat.y += midBoat.vy
-  midBoat.x += midBoat.vx
+  playerControls(boat)
+  boat.y += boat.vy
+  boat.x += boat.vx
+  camera.pivot.set(boat.x - canvasWidth / 2, boat.y - canvasHeight / 2)
 
   drowners.children.forEach(drowner => {
-    if (hitTestRectangle(midBoat, drowner)) {
+    if (hitTestRectangle(boat, drowner)) {
       drowners.removeChild(drowner)
       if (drowners.children.length > 0) {
         message.text = `Rescued ${numberOfDrowners -
