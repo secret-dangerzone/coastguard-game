@@ -17,6 +17,8 @@ const numberOfDrowners = 5
 const randomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
+const clamp = (value, min, max) => Math.max(Math.min(value, max), min)
+
 const app = new Application()
 app.renderer.backgroundColor = 0x2ebae8
 document.body.appendChild(app.view)
@@ -68,15 +70,35 @@ const gameLoop = delta => {
   state(delta)
 }
 
+const scaleForSpeed = boat =>
+  1 - Math.min((Math.abs(boat.vy) + Math.abs(boat.vx)) / 20, 0.2)
+
+const xAxisCameraOffset = (boat, scale) => {
+  const halfWidth = canvasWidth / 2 / scale
+  return (
+    boat.x + clamp(boat.vx * 25, -halfWidth / 1.5, halfWidth / 1.5) - halfWidth
+  )
+}
+
+const yAxisCameraOffset = (boat, scale) => {
+  const halfHeight = canvasHeight / 2 / scale
+  return (
+    boat.y +
+    clamp(boat.vy * 25, -halfHeight / 1.5, halfHeight / 1.5) -
+    halfHeight
+  )
+}
+
 const play = delta => {
   playerControls(boat)
   boat.y += boat.vy
   boat.x += boat.vx
-  const scale = 1 - Math.min((Math.abs(boat.vy) + Math.abs(boat.vx)) / 20, 0.2)
+
+  const scale = scaleForSpeed(boat)
   camera.scale.set(scale, scale)
   camera.pivot.set(
-    boat.x - canvasWidth / 2 / scale,
-    boat.y - canvasHeight / 2 / scale
+    xAxisCameraOffset(boat, scale),
+    yAxisCameraOffset(boat, scale)
   )
 
   drowners.children.forEach(drowner => {
