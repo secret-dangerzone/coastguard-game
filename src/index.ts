@@ -70,23 +70,18 @@ const gameLoop = delta => {
   state(delta)
 }
 
-const scaleForSpeed = boat =>
-  1 - Math.min((Math.abs(boat.vy) + Math.abs(boat.vx)) / 20, 0.2)
+const scaleForSpeed = boat => 1 - Math.min(boat.speed / 20, 0.2)
 
 const xAxisCameraOffset = (boat, scale) => {
   const halfWidth = canvasWidth / 2 / scale
-  return (
-    boat.x + clamp(boat.vx * 25, -halfWidth / 1.5, halfWidth / 1.5) - halfWidth
-  )
+  const thirdWidth = halfWidth / 1.5
+  return boat.x + clamp(boat.vx * 20, -thirdWidth, thirdWidth) - halfWidth
 }
 
 const yAxisCameraOffset = (boat, scale) => {
   const halfHeight = canvasHeight / 2 / scale
-  return (
-    boat.y +
-    clamp(boat.vy * 25, -halfHeight / 1.5, halfHeight / 1.5) -
-    halfHeight
-  )
+  const thirdHeight = halfHeight / 1.5
+  return boat.y + clamp(boat.vy * 20, -thirdHeight, thirdHeight) - halfHeight
 }
 
 const play = delta => {
