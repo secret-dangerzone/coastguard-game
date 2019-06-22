@@ -17,8 +17,6 @@ const numberOfDrowners = 5
 const randomInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min
 
-const clamp = (value, min, max) => Math.max(Math.min(value, max), min)
-
 const app = new Application()
 app.renderer.backgroundColor = 0x2ebae8
 document.body.appendChild(app.view)
@@ -51,9 +49,9 @@ const setup = (loader, resources) => {
   boat.anchor.set(0.5, 0.5)
   boat.scale.set(0.5, 0.5)
   boat.rotation = 0
-  boat.acceleration = 0.05
+  boat.acceleration = 0.09
   boat.turnSpeed = 0.01
-  boat.friction = 0.99
+  boat.friction = 0.01
   boat.vx = 0
   boat.vy = 0
   boat.position.set(canvasWidth / 2, canvasHeight / 2)
@@ -74,14 +72,12 @@ const scaleForSpeed = boat => 1 - Math.min(boat.speed / 20, 0.2)
 
 const xAxisCameraOffset = (boat, scale) => {
   const halfWidth = canvasWidth / 2 / scale
-  const thirdWidth = halfWidth / 1.5
-  return boat.x + clamp(boat.vx * 20, -thirdWidth, thirdWidth) - halfWidth
+  return boat.x + boat.vx * 20 - halfWidth
 }
 
 const yAxisCameraOffset = (boat, scale) => {
   const halfHeight = canvasHeight / 2 / scale
-  const thirdHeight = halfHeight / 1.5
-  return boat.y + clamp(boat.vy * 20, -thirdHeight, thirdHeight) - halfHeight
+  return boat.y + boat.vy * 20 - halfHeight
 }
 
 const play = delta => {
