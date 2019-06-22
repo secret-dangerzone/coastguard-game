@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Exit immediately if any command (outside of a conditional) fails
+set -e
+
+red="\e[31m"
+green="\e[32m"
+reset="\e[0m"
+
+function at_exit {
+  local exit_status=$?
+
+  if [[ ! $exit_status -eq 0 ]]; then
+    echo "Setup failed. Please follow instructions above and try again."
+  fi
+}
+
+function highlight {
+  printf "${1}${2}${reset}\n"
+}
+
+trap at_exit EXIT
+
+echo "==> Checking prerequisites"
+
+command -v node || {
+  highlight $red "node command not found. Please install it:"
+  highlight $red "https://nodejs.org/en/"
+  exit 1
+}
+
+command -v yarn || {
+  highlight $red "yarn command not found. You can install it with:"
+  highlight $red "\`npm install --global yarn\`"
+  exit 1
+}
+
+echo "==> Installing dependencies"
+
+yarn install
+
+echo
+highlight $green "==> You're good to go! To start a local server, run:"
+echo
+highlight $green "    bin/local"
+echo
