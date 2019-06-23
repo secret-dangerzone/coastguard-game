@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js'
 import drownerPath from '../assets/drowner.png'
 import midBoatPath from '../assets/mid-boat.png'
+import waterTile from '../assets/water-tile.png'
+import waterFilter from '../assets/water-filter.png'
 import hitTestRectangle from './hit-test-rectangle'
 import playerControls from './player-controls'
 
@@ -9,6 +11,9 @@ const Container = PIXI.Container
 const Sprite = PIXI.Sprite
 const Text = PIXI.Text
 const loader = PIXI.Loader.shared
+const Texture = PIXI.Texture
+const TilingSprite = PIXI.TilingSprite
+const filters = PIXI.filters
 
 const canvasWidth = 800
 const canvasHeight = 600
@@ -32,9 +37,26 @@ app.stage.addChild(message)
 
 const drowners = new Container()
 
-let boat, state
+let boat, state, water
 
 const setup = (loader, resources) => {
+
+  const waterFilterSprite = Sprite.from(waterFilter)
+  waterFilterSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT
+  const displacementFilter = new filters.DisplacementFilter(waterFilterSprite)
+  waterFilterSprite.scale.y = 0.6
+  waterFilterSprite.scale.x = 0.6
+  camera.addChild(waterFilterSprite)
+
+  const waterTexture = Texture.from(waterTile)
+  water = new TilingSprite(waterTexture, canvasWidth * 3, canvasHeight * 3)
+  water.position.x = canvasWidth * -1
+  water.position.y = canvasHeight * -1
+  water.filters = [displacementFilter]
+  camera.addChild(water)
+
+  animateFilter(waterFilterSprite, 0)
+
   for (let i = 0; i < numberOfDrowners; i++) {
     const drowner = Sprite.from(resources.drowner.texture)
     drowner.anchor.set(0.5, 0.5)
@@ -89,10 +111,25 @@ const yAxisCameraOffset = (boat, scale) => {
   )
 }
 
+const animateFilter = (filterSprite, initCount) => {
+
+  const count = initCount || 0
+
+  filterSprite.x = count * 10
+  filterSprite.y = count * 10
+
+  requestAnimationFrame(_ => animateFilter(filterSprite, count + 0.05))
+}
+
 const play = delta => {
   playerControls(boat)
   boat.y += boat.vy
   boat.x += boat.vx
+
+  water.position.y += boat.vy
+  water.position.x += boat.vx
+  water.tilePosition.y -= boat.vy
+  water.tilePosition.x -= boat.vx
 
   const scale = scaleForSpeed(boat)
   camera.scale.set(scale, scale)
